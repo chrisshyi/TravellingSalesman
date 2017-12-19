@@ -1,24 +1,37 @@
 from unittest import TestCase
 import unittest
-from tsp import generate_all_subsets, Point, extract_data, find_min_tour
+from tsp import generate_all_subsets_with_source, Point, extract_data, find_min_tour, generate_all_subsets
 from math import isclose
 
 
 class TestTsp(TestCase):
 
     def test_generate_subset(self):
-        subsets = generate_all_subsets(3, {1, 2, 3, 4}, 1)
+        subsets = generate_all_subsets_with_source(3, {1, 2, 3, 4}, 1)
         self.assertTrue(len(subsets), 2)
         self.assertTrue({1, 2, 3} in subsets)
         self.assertTrue({1, 3, 4} in subsets)
 
     def test_generate_subset_larger(self):
-        subsets = generate_all_subsets(3, {1, 2, 3, 4, 5}, 1)
-        self.assertTrue(len(subsets), 3)
-        self.assertTrue({1, 3, 2} in subsets)
+        subsets = generate_all_subsets_with_source(3, {1, 2, 3, 4, 5}, 1)
+        self.assertEqual(len(subsets), 6)
         self.assertTrue({1, 2, 3} in subsets)
+        self.assertTrue({1, 2, 4} in subsets)
+        self.assertTrue({1, 2, 5} in subsets)
         self.assertTrue({1, 3, 4} in subsets)
         self.assertTrue({1, 3, 5} in subsets)
+        self.assertTrue({1, 4, 5} in subsets)
+
+    def test_generate_subset_no_source(self):
+        subsets = generate_all_subsets(1, {2, 3, 4})
+        self.assertEqual(len(subsets), 3)
+
+    def test_generate_subset_no_source_two(self):
+        subsets = generate_all_subsets(2, {1, 4, 5})
+        self.assertEqual(len(subsets), 3)
+        self.assertTrue({1, 4} in subsets)
+        self.assertTrue({1, 5} in subsets)
+        self.assertTrue({4, 5} in subsets)
 
     def test_point_distance(self):
         point1 = Point(0, 0)
@@ -56,13 +69,26 @@ class TestTsp(TestCase):
 
     def test_min_tour_distance_three_points(self):
         data_points, points_to_coordinates, point_distances = TestTsp.extract_data_from_file("tests/test1.txt")
-        self.assertTrue(isclose(find_min_tour(data_points, point_distances), 27.055, rel_tol=1e-3))
+        min_tour = find_min_tour(data_points, point_distances, 1)
+        self.assertTrue(isclose(min_tour, 27.055, rel_tol=1e-3))
 
     def test_min_tour_distance_four_points(self):
         data_points, points_to_coordinates, point_distances = TestTsp.extract_data_from_file("tests/test2.txt")
-        min_tour_dist = find_min_tour(data_points, point_distances)
+        min_tour_dist = find_min_tour(data_points, point_distances, 1)
         print(min_tour_dist)
         self.assertTrue(isclose(min_tour_dist, 31.783, rel_tol=1e-3))
+
+    def test_min_tour_distance_eight_points(self):
+        data_points, points_to_coordinates, point_distances = TestTsp.extract_data_from_file("tests/test3.txt")
+        min_tour_dist = find_min_tour(data_points, point_distances, 1)
+        print(min_tour_dist)
+        self.assertTrue(isclose(min_tour_dist, 12.36, rel_tol=1e-2))
+
+    def test_min_tour_distance_twelve_points(self):
+        data_points, points_to_coordinates, point_distances = TestTsp.extract_data_from_file("tests/test4.txt")
+        min_tour_dist = find_min_tour(data_points, point_distances, 1)
+        print(min_tour_dist)
+        self.assertTrue(isclose(min_tour_dist, 4.00, rel_tol=1e-2))
 
     @staticmethod
     def extract_data_from_file(file):
