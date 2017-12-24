@@ -21,6 +21,14 @@ class Point:
         """
         return math.sqrt((self.x_cor - point.x_cor)**2 + (self.y_cor - point.y_cor)**2)
 
+    def squared_distance_to(self, point):
+        """
+        Calculates the squared Euclidean distance from this point to another
+
+        :param point: another Point object
+        """
+        return (self.x_cor - point.x_cor)**2 + (self.y_cor - point.y_cor)**2
+
     def __eq__(self, other):
         """
         Defines the comparison of one Point object to another
